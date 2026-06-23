@@ -1,0 +1,1 @@
+$playlistInfo = & yt-dlp --flat-playlist --skip-download --print "playlist_title" --print "playlist_count" --print "playlist_id" $URL 2`

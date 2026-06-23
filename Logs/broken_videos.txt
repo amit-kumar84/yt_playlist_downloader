@@ -1,4 +1,1 @@
-
-Usage: yt-dlp [OPTIONS] URL [URL...]
-
 yt-dlp: error: invalid before_dl print template "[NOW DOWNLOADING] %((title)s ": incomplete format key
