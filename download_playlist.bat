@@ -26,6 +26,13 @@ set "VIDEO_ARCHIVE=%LOG_ROOT%\downloaded_videos.txt"
 set "AUDIO_ARCHIVE=%LOG_ROOT%\downloaded_audio.txt"
 set "OUTPUT_TEMPLATE=%DOWNLOAD_ROOT%/%%(playlist_title)s/%%(playlist_index)02d→ %%(title)s.%%(ext)s"
 
+:: Prefer the bundled downloader and FFmpeg shipped with this script.
+set "PATH=%~dp0;%PATH%"
+set "JS_RUNTIME_ARG="
+set "YOUTUBE_CLIENT_ARG=--extractor-args youtube:player_client=web_embedded"
+where node >nul 2>&1
+if not errorlevel 1 set "JS_RUNTIME_ARG=--js-runtimes node"
+
 :: Cookie configuration (default = none)
 set "COOKIES_OPTION=none"
 set "COOKIES_ARG="
@@ -270,7 +277,7 @@ if errorlevel 1 (
 
 :: Extract playlist ID for logging (optional)
 set "PLAYLIST_ID="
-for /f "usebackq delims=" %%A in (`yt-dlp --flat-playlist --skip-download --print "playlist_id" "%URL%" 2^>nul`) do (
+for /f "usebackq delims=" %%A in (`yt-dlp !JS_RUNTIME_ARG! !YOUTUBE_CLIENT_ARG! --flat-playlist --skip-download --print "playlist_id" "%URL%" 2^>nul`) do (
     if not defined PLAYLIST_ID set "PLAYLIST_ID=%%A"
 )
 
@@ -303,6 +310,8 @@ if "%mode%"=="audio" (
     color 09
 
     yt-dlp ^
+    !JS_RUNTIME_ARG! ^
+    !YOUTUBE_CLIENT_ARG! ^
     --print before_dl:"[NOW DOWNLOADING] %%(playlist_index)02d/%%(playlist_count)02d - %%(title)s " ^
     !PLAYLIST_ITEMS_ARG! ^
     --extract-audio ^
@@ -340,6 +349,8 @@ if "%mode%"=="audio" (
     color 09
 
     yt-dlp ^
+    !JS_RUNTIME_ARG! ^
+    !YOUTUBE_CLIENT_ARG! ^
     --print before_dl:"[NOW DOWNLOADING] %%(playlist_index)02d/%%(playlist_count)02d - %%(title)s " ^
     !PLAYLIST_ITEMS_ARG! ^
     -f "%quality%" ^
